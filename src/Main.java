@@ -1,10 +1,22 @@
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 public class Main {
 
     public static void main(String[] args) {
+
+        // TEST STUFF
         byte[] e = { 1, 3, 4, 8, 6, 2, 7, 0, 5 };
+        byte[] m = {2, 8, 1, 0, 4, 3, 7, 6, 5 };
+        byte[] h = {5, 6, 7, 4, 0, 8, 3, 2, 1 };
         byte[] g = { 1, 2, 3, 8, 0, 4, 7, 6, 5 };
+        ArrayList<Byte> hard = new ArrayList<>();
+
+        for (byte b : h) {
+            hard.add(b);
+        }
+
         ArrayList<Byte> easy = new ArrayList<>();
         easy.add((byte)1);
         easy.add((byte)3);
@@ -26,27 +38,16 @@ public class Main {
         goal.add((byte)6);
         goal.add((byte)5);
 
-        Node testNode = new Node(easy,null,null,0,0);
+        Node testNode = new Node(hard);
 
+        Instant start = Instant.now();
+        ArrayList<Node> solution = uniformCostSearch(testNode, goal);
+        Instant end = Instant.now();
+        System.out.println(Duration.between(start, end).toMillis() + "ms\n");
 
-        ArrayList<Node> solution = breadthFirstSearch(testNode, goal);
-
-               for (Node node : solution) {
+        for (Node node : solution) {
             System.out.println(node.toString());
         }
-
-/*
-        for (int i = 0; i < 9; i++) {
-            System.out.println("Level: " + i);
-            zeroLocation = getZeroLocation(board);
-            System.out.println(boardToString(board));
-            for(Action a : getActions(zeroLocation)) {
-                System.out.println("Zero moved: " + a);
-                System.out.println(boardToString(performAction(board, zeroLocation, a)));
-            }
-            if (i+1 < 9) { board = cloneAndSwap(board,i,i+1); }
-        }
-*/
 
     }
 
@@ -62,9 +63,10 @@ public class Main {
         return newBoard;
     }
 
-    public static ArrayList<Byte> performAction(ArrayList<Byte> board, int zeroLocation, Action action) {
+    public static ArrayList<Byte> performAction(ArrayList<Byte> board, Action action) {
 
         ArrayList<Byte> newBoard;
+        int zeroLocation = board.indexOf((byte) 0);
 
         switch(action) {
             case UP:
@@ -87,57 +89,6 @@ public class Main {
         return newBoard;
     }
 
-    public static String boardToString(ArrayList<Byte> board) {
-
-        return
-            board.get(0) + " " + board.get(1) + " " + board.get(2) + "\n" +
-            board.get(3) + " " + board.get(4) + " " + board.get(5) + "\n" +
-            board.get(6) + " " + board.get(7) + " " + board.get(8) + "\n";
-
-    }
-
-    public static int getZeroLocation(ArrayList<Byte> board) {
-        return board.indexOf((byte) 0);
-    }
-
-    public static Action[] getActions(int zeroLocation) {
-        Action[] actions;
-
-        switch(zeroLocation) {
-            case 0:
-                actions = new Action[] { Action.RIGHT, Action.DOWN };
-                break;
-            case 1:
-                actions = new Action[] { Action.LEFT, Action.RIGHT, Action.DOWN };
-                break;
-            case 2:
-                actions = new Action[] { Action.LEFT, Action.DOWN };
-                break;
-            case 3:
-                actions = new Action[] { Action.UP, Action.RIGHT, Action.DOWN };
-                break;
-            case 4:
-                actions = new Action[] { Action.UP, Action.DOWN, Action.LEFT, Action.RIGHT };
-                break;
-            case 5:
-                actions = new Action[] { Action.UP, Action.DOWN, Action.LEFT };
-                break;
-            case 6:
-                actions = new Action[] { Action.UP, Action.RIGHT };
-                break;
-            case 7:
-                actions = new Action[] { Action.LEFT, Action.UP, Action.RIGHT };
-                break;
-            case 8:
-                actions = new Action[] { Action.UP, Action.LEFT };
-                break;
-            default:
-                //TODO: Throwing error may be better than returning empty array
-                actions = new Action[0];
-        }
-        return actions;
-    }
-
     public static ArrayList<Node> breadthFirstSearch(Node root, ArrayList<Byte> goal) {
 
         if (root.getState().equals(goal)) {
@@ -156,18 +107,19 @@ public class Main {
             ArrayList<Byte> nodeState = node.getState();
 
             explored.add(nodeState);
-            int zeroLocation = node.getZeroLocation();
 
             node.setExpanded(true);
 
-            for(Action action : getActions(zeroLocation)) {
-                ArrayList<Byte> childState = performAction(nodeState, zeroLocation, action);
+            for(Action action : node.getActions()) {
+                ArrayList<Byte> childState = performAction(nodeState, action);
+                //TODO: Should I check if childState in searchQueue if only possible in linear time?
                 if (!explored.contains(childState)) {
-                    Node child = new Node(childState, node, action, node.getDepth() + 1, childState.get(zeroLocation));
+                    Node child = new Node(childState, node, action);
                     node.addChild(child);
                     if (childState.equals(goal)) {
                         return child.getPath();
                     }
+                    // BFS: add to END of searchQueue
                     searchQueue.add(child);
                 }
             }
@@ -177,4 +129,86 @@ public class Main {
         return new ArrayList<>();
 
     }
+
+    public static ArrayList<Node> depthFirstSearch(Node root, ArrayList<Byte> goal) {
+
+        if (root.getState().equals(goal)) {
+            ArrayList<Node> path = new ArrayList<>();
+            path.add(root);
+            return path;
+        }
+
+        ArrayDeque<Node> searchQueue = new ArrayDeque<>();
+        searchQueue.add(root);
+
+        HashSet<ArrayList<Byte>> explored = new HashSet<>();
+
+        while(!searchQueue.isEmpty()) {
+            Node node = searchQueue.remove();
+            ArrayList<Byte> nodeState = node.getState();
+
+            explored.add(nodeState);
+
+            node.setExpanded(true);
+
+            for(Action action : node.getActions()) {
+                ArrayList<Byte> childState = performAction(nodeState, action);
+                //TODO: Should I check if childState in searchQueue if only possible in linear time?
+                if (!explored.contains(childState)) {
+                    Node child = new Node(childState, node, action);
+                    node.addChild(child);
+                    if (childState.equals(goal)) {
+                        return child.getPath();
+                    }
+                    // DFS: add to FRONT of searchQueue
+                    searchQueue.addFirst(child);
+                }
+            }
+
+        }
+
+        return new ArrayList<>();
+
+    }
+
+    public static ArrayList<Node> uniformCostSearch(Node root, ArrayList<Byte> goal) {
+
+        PathCostPriorityQueue searchQueue = new PathCostPriorityQueue();
+        searchQueue.add(root);
+
+        HashSet<ArrayList<Byte>> explored = new HashSet<>();
+
+        while(!searchQueue.isEmpty()) {
+
+            Node node = searchQueue.remove();
+            ArrayList<Byte> nodeState = node.getState();
+
+            if (nodeState.equals(goal)) {
+                return node.getPath();
+            }
+
+            explored.add(nodeState);
+            node.setExpanded(true);
+
+            for(Action action : node.getActions()) {
+                ArrayList<Byte> childState = performAction(nodeState, action);
+                Node child = new Node(childState, node, action);
+
+                if (!explored.contains(childState) && !searchQueue.contains(childState)) {
+                    searchQueue.add(child);
+                    node.addChild(child);
+                } else if (searchQueue.contains(childState)
+                       && (searchQueue.getPathCost(childState) > child.getPathCost())) {
+                    searchQueue.remove(childState);
+                    searchQueue.add(child);
+                    node.addChild(child);
+                }
+
+            }
+        }
+
+        // Return empty ArrayList if no path found
+        return new ArrayList<>();
+    }
+
 }
