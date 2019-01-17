@@ -7,41 +7,34 @@ public class Main {
     public static void main(String[] args) {
 
         // TEST STUFF
-        byte[] e = { 1, 3, 4, 8, 6, 2, 7, 0, 5 };
-        byte[] m = {2, 8, 1, 0, 4, 3, 7, 6, 5 };
-        byte[] h = {5, 6, 7, 4, 0, 8, 3, 2, 1 };
         byte[] g = { 1, 2, 3, 8, 0, 4, 7, 6, 5 };
+        byte[] e = { 1, 3, 4, 8, 6, 2, 7, 0, 5 };
+        byte[] m = { 2, 8, 1, 0, 4, 3, 7, 6, 5 };
+        byte[] h = { 5, 6, 7, 4, 0, 8, 3, 2, 1 };
+
+        ArrayList<Byte> goal = new ArrayList<>();
+        ArrayList<Byte> easy = new ArrayList<>();
+        ArrayList<Byte> medium = new ArrayList<>();
         ArrayList<Byte> hard = new ArrayList<>();
 
+        for (byte b : g) {
+            goal.add(b);
+        }
+
+        for (byte b : e) {
+            easy.add(b);
+        }
+        for (byte b : m) {
+            medium.add(b);
+        }
         for (byte b : h) {
             hard.add(b);
         }
-
-        ArrayList<Byte> easy = new ArrayList<>();
-        easy.add((byte)1);
-        easy.add((byte)3);
-        easy.add((byte)4);
-        easy.add((byte)8);
-        easy.add((byte)6);
-        easy.add((byte)2);
-        easy.add((byte)7);
-        easy.add((byte)0);
-        easy.add((byte)5);
-        ArrayList<Byte> goal = new ArrayList<>();
-        goal.add((byte)1);
-        goal.add((byte)2);
-        goal.add((byte)3);
-        goal.add((byte)8);
-        goal.add((byte)0);
-        goal.add((byte)4);
-        goal.add((byte)7);
-        goal.add((byte)6);
-        goal.add((byte)5);
-
-        Node testNode = new Node(hard);
+        
+        Node testNode = new Node(easy);
 
         Instant start = Instant.now();
-        ArrayList<Node> solution = uniformCostSearch(testNode, goal);
+        ArrayList<Node> solution = iterativeDeepeningSearch(testNode, goal);
         Instant end = Instant.now();
         System.out.println(Duration.between(start, end).toMillis() + "ms\n");
 
@@ -51,53 +44,15 @@ public class Main {
 
     }
 
-    public static ArrayList<Byte> cloneAndSwap(ArrayList<Byte> board, int a, int b) {
 
-        // Clone the puzzle board
-        ArrayList<Byte> newBoard = new ArrayList<>(board);
-
-        // Swap a and b
-        Collections.swap(newBoard,a,b);
-
-        //Return new puzzle board
-        return newBoard;
-    }
-
-    public static ArrayList<Byte> performAction(ArrayList<Byte> board, Action action) {
-
-        ArrayList<Byte> newBoard;
-        int zeroLocation = board.indexOf((byte) 0);
-
-        switch(action) {
-            case UP:
-                newBoard = cloneAndSwap(board, zeroLocation, zeroLocation - 3);
-                break;
-            case DOWN:
-                newBoard = cloneAndSwap(board, zeroLocation, zeroLocation + 3);
-                break;
-            case LEFT:
-                newBoard = cloneAndSwap(board, zeroLocation, zeroLocation - 1);
-                break;
-            case RIGHT:
-                newBoard = cloneAndSwap(board, zeroLocation, zeroLocation + 1);
-                break;
-            default:
-                //TODO: Throwing an error is likely better than returning unmodified board
-                newBoard = board;
-        }
-
-        return newBoard;
-    }
 
     public static ArrayList<Node> breadthFirstSearch(Node root, ArrayList<Byte> goal) {
 
         if (root.getState().equals(goal)) {
-            ArrayList<Node> path = new ArrayList<>();
-            path.add(root);
-            return path;
+            return root.getPath();
         }
 
-        ArrayDeque<Node> searchQueue = new ArrayDeque<>();
+        HashMapDeque searchQueue = new HashMapDeque();
         searchQueue.add(root);
 
         HashSet<ArrayList<Byte>> explored = new HashSet<>();
@@ -111,9 +66,8 @@ public class Main {
             node.setExpanded(true);
 
             for(Action action : node.getActions()) {
-                ArrayList<Byte> childState = performAction(nodeState, action);
-                //TODO: Should I check if childState in searchQueue if only possible in linear time?
-                if (!explored.contains(childState)) {
+                ArrayList<Byte> childState = BoardUtilities.performAction(nodeState, action);
+                if (!explored.contains(childState) && !searchQueue.contains(childState)) {
                     Node child = new Node(childState, node, action);
                     node.addChild(child);
                     if (childState.equals(goal)) {
@@ -126,54 +80,82 @@ public class Main {
 
         }
 
+        // If no path is found, return an empty ArrayList
         return new ArrayList<>();
 
     }
 
+    /**
+     * Performs depthLimitedSearch with the maximum possible int value as the depth limit
+     * Will return an empty path if maximum depth limit is exceeded
+     * @param root search tree node containing the initial puzzle board state
+     * @param goal the goal puzzle board state
+     * @return path from initial puzzle board state to goal puzzle board state or empty path
+     */
     public static ArrayList<Node> depthFirstSearch(Node root, ArrayList<Byte> goal) {
+        return depthLimitedSearch(root, goal, Integer.MAX_VALUE);
+    }
+
+    public static ArrayList<Node> depthLimitedSearch(Node root, ArrayList<Byte> goal, int maxDepth) {
 
         if (root.getState().equals(goal)) {
-            ArrayList<Node> path = new ArrayList<>();
-            path.add(root);
-            return path;
+            return root.getPath();
         }
 
-        ArrayDeque<Node> searchQueue = new ArrayDeque<>();
+        HashMapDeque searchQueue = new HashMapDeque();
         searchQueue.add(root);
 
         HashSet<ArrayList<Byte>> explored = new HashSet<>();
 
         while(!searchQueue.isEmpty()) {
             Node node = searchQueue.remove();
-            ArrayList<Byte> nodeState = node.getState();
 
-            explored.add(nodeState);
+            // Node is eligible for expansion only if less than maxDepth
+            // Goal check occurs at time of node creation, not expansion
+            if (node.getDepth() < maxDepth) {
+                ArrayList<Byte> nodeState = node.getState();
 
-            node.setExpanded(true);
+                explored.add(nodeState);
 
-            for(Action action : node.getActions()) {
-                ArrayList<Byte> childState = performAction(nodeState, action);
-                //TODO: Should I check if childState in searchQueue if only possible in linear time?
-                if (!explored.contains(childState)) {
-                    Node child = new Node(childState, node, action);
-                    node.addChild(child);
-                    if (childState.equals(goal)) {
-                        return child.getPath();
+                node.setExpanded(true);
+
+                for(Action action : node.getActions()) {
+                    ArrayList<Byte> childState = BoardUtilities.performAction(nodeState, action);
+                    if (!explored.contains(childState) && !searchQueue.contains(childState)) {
+                        Node child = new Node(childState, node, action);
+                        node.addChild(child);
+                        if (childState.equals(goal)) {
+                            return child.getPath();
+                        }
+                        // DFS: add to FRONT of searchQueue
+                        searchQueue.addFirst(child);
                     }
-                    // DFS: add to FRONT of searchQueue
-                    searchQueue.addFirst(child);
                 }
             }
 
         }
 
+        // If no path is found, return an empty ArrayList
         return new ArrayList<>();
 
     }
 
+    public static ArrayList<Node> iterativeDeepeningSearch(Node root, ArrayList<Byte> goal) {
+        ArrayList<Node> path = null;
+
+        for(int depth = 0; depth < Integer.MAX_VALUE; depth++) {
+            path = depthLimitedSearch(root, goal, depth);
+            if (!path.isEmpty()) {
+                return path;
+            }
+        }
+
+        return new ArrayList<>();
+    }
+
     public static ArrayList<Node> uniformCostSearch(Node root, ArrayList<Byte> goal) {
 
-        PathCostPriorityQueue searchQueue = new PathCostPriorityQueue();
+        HashMapPriorityQueue searchQueue = new HashMapPriorityQueue(new PathCostComparator());
         searchQueue.add(root);
 
         HashSet<ArrayList<Byte>> explored = new HashSet<>();
@@ -191,7 +173,7 @@ public class Main {
             node.setExpanded(true);
 
             for(Action action : node.getActions()) {
-                ArrayList<Byte> childState = performAction(nodeState, action);
+                ArrayList<Byte> childState = BoardUtilities.performAction(nodeState, action);
                 Node child = new Node(childState, node, action);
 
                 if (!explored.contains(childState) && !searchQueue.contains(childState)) {
@@ -210,5 +192,43 @@ public class Main {
         // Return empty ArrayList if no path found
         return new ArrayList<>();
     }
+
+    public static ArrayList<Node> greedyBestFirstSearch(Node root, ArrayList<Byte> goal) {
+
+        HashMapPriorityQueue searchQueue = new HashMapPriorityQueue(new MisplacedTileComparator(goal));
+        searchQueue.add(root);
+
+        HashSet<ArrayList<Byte>> explored = new HashSet<>();
+
+        while(!searchQueue.isEmpty()) {
+
+            Node node = searchQueue.remove();
+            ArrayList<Byte> nodeState = node.getState();
+
+            if (nodeState.equals(goal)) {
+                return node.getPath();
+            }
+
+            explored.add(nodeState);
+            node.setExpanded(true);
+
+            for(Action action : node.getActions()) {
+                ArrayList<Byte> childState = BoardUtilities.performAction(nodeState, action);
+                Node child = new Node(childState, node, action);
+
+                if (!explored.contains(childState) && !searchQueue.contains(childState)) {
+                    searchQueue.add(child);
+                    node.addChild(child);
+                }
+
+            }
+        }
+
+        // Return empty ArrayList if no path found
+        return new ArrayList<>();
+    }
+
+
+
 
 }

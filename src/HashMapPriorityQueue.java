@@ -1,16 +1,17 @@
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 
 /**
  * Wrapper for Java PriorityQueue that adds a HashMap for constant time lookup by Node state
  */
-public class PathCostPriorityQueue {
+public class HashMapPriorityQueue {
     PriorityQueue<Node> priorityQueue;
     HashMap<ArrayList<Byte>, Node> stateNodeMap;
 
-    public PathCostPriorityQueue() {
-        this.priorityQueue = new PriorityQueue<>(1, new PathCostComparator());
+    public HashMapPriorityQueue(Comparator comparator) {
+        this.priorityQueue = new PriorityQueue<>(1, comparator);
         this.stateNodeMap = new HashMap<>();
     }
 
