@@ -6,41 +6,115 @@ public class Main {
 
     public static void main(String[] args) {
 
+        ArrayList<Byte> board = null;
+        ArrayList<Byte> goal = generateBoard(new byte[] { 1, 2, 3, 8, 0, 4, 7, 6, 5 });
+        boolean finished = false;
+
+        while(!finished) {
+
+            System.out.println("Choose a difficulty level");
+            System.out.println("1 - Easy");
+            System.out.println("2 - Medium");
+            System.out.println("3 - Hard");
+            System.out.println("0 - Quit");
+
+            Scanner input = new Scanner(System.in);
+            int option = input.nextInt();
+
+            switch(option) {
+                case 1:
+                    byte[] easy = { 1, 3, 4, 8, 6, 2, 7, 0, 5 };
+                    board = generateBoard(easy);
+                    finished = true;
+                    break;
+                case 2:
+                    byte[] medium = { 2, 8, 1, 0, 4, 3, 7, 6, 5 };
+                    board = generateBoard(medium);
+                    finished = true;
+                    break;
+                case 3:
+                    byte[] hard = { 5, 6, 7, 4, 0, 8, 3, 2, 1 };
+                    board = generateBoard(hard);
+                    finished = true;
+                    break;
+                case 0:
+                    finished = true;
+                    return;
+                default:
+                    System.out.println("INVALID SELECTION");
+                    break;
+            }
+        }
+
+        Node root = new Node(board);
+        ArrayList<Node> solution = null;
+
+        finished = false;
+
+        while(!finished) {
+            System.out.println("Choose a search strategy");
+            System.out.println("1 - Breadth-first");
+            System.out.println("2 - Depth-first");
+            System.out.println("3 - Iterative deepening");
+            System.out.println("4 - Uniform-cost");
+            System.out.println("5 - Best-first (Greedy)");
+            System.out.println("6 - A*1 (number of misplaced tiles)");
+            System.out.println("7 - A*2 (sum of Manhattan distances)");
+            System.out.println("8 - A*3 (custom heuristic)");
+            System.out.println("0 - Quit");
+
+            Scanner input = new Scanner(System.in);
+            int option = input.nextInt();
+
+            switch(option) {
+                case 1:
+                    solution = breadthFirstSearch(root, goal);
+                    break;
+                case 2:
+                    solution = depthFirstSearch(root, goal);
+                    break;
+                case 3:
+                    solution = iterativeDeepeningSearch(root, goal);
+                    break;
+                case 4:
+                    solution = uniformCostSearch(root, goal);
+                    break;
+                case 5:
+                    solution = greedyBestFirstSearch(root, goal);
+                    break;
+                case 6:
+                    break;
+                case 7:
+                    break;
+                case 8:
+                    break;
+                case 0:
+                    finished = true;
+                    break;
+
+                default:
+                    System.out.println("INVALID SELECTION");
+                    break;
+            }
+
+            for (Node node : solution) {
+                System.out.println(node.toString());
+            }
+
+        }
+
+
         // TEST STUFF
-        byte[] g = { 1, 2, 3, 8, 0, 4, 7, 6, 5 };
+/*        byte[] g = { 1, 2, 3, 8, 0, 4, 7, 6, 5 };
         byte[] e = { 1, 3, 4, 8, 6, 2, 7, 0, 5 };
         byte[] m = { 2, 8, 1, 0, 4, 3, 7, 6, 5 };
-        byte[] h = { 5, 6, 7, 4, 0, 8, 3, 2, 1 };
+        byte[] h = { 5, 6, 7, 4, 0, 8, 3, 2, 1 };*/
 
-        ArrayList<Byte> goal = new ArrayList<>();
-        ArrayList<Byte> easy = new ArrayList<>();
-        ArrayList<Byte> medium = new ArrayList<>();
-        ArrayList<Byte> hard = new ArrayList<>();
-
-        for (byte b : g) {
-            goal.add(b);
-        }
-
-        for (byte b : e) {
-            easy.add(b);
-        }
-        for (byte b : m) {
-            medium.add(b);
-        }
-        for (byte b : h) {
-            hard.add(b);
-        }
-        
-        Node testNode = new Node(easy);
 
         Instant start = Instant.now();
-        ArrayList<Node> solution = iterativeDeepeningSearch(testNode, goal);
         Instant end = Instant.now();
         System.out.println(Duration.between(start, end).toMillis() + "ms\n");
 
-        for (Node node : solution) {
-            System.out.println(node.toString());
-        }
 
     }
 
@@ -228,6 +302,15 @@ public class Main {
         return new ArrayList<>();
     }
 
+    public static ArrayList<Byte> generateBoard(byte[] byteBoard) {
+        ArrayList<Byte> board = new ArrayList<>();
+
+        for (byte b : byteBoard) {
+            board.add(b);
+        }
+
+        return board;
+    }
 
 
 
