@@ -91,7 +91,7 @@ public class Main {
                     solution = aStarTwoSearch(root, goal);
                     break;
                 case 8:
-
+                    solution = aStarThreeSearch(root, goal);
                     break;
                 case 0:
                     finished = true;
@@ -102,19 +102,15 @@ public class Main {
                     break;
             }
 
+            System.out.println("Press enter for results: ");
+            input.nextLine();
+
             for (Node node : solution) {
                 System.out.println(node.toString());
             }
 
 
         }
-
-
-        // TEST STUFF
-/*        byte[] g = { 1, 2, 3, 8, 0, 4, 7, 6, 5 };
-        byte[] e = { 1, 3, 4, 8, 6, 2, 7, 0, 5 };
-        byte[] m = { 2, 8, 1, 0, 4, 3, 7, 6, 5 };
-        byte[] h = { 5, 6, 7, 4, 0, 8, 3, 2, 1 };*/
 
 
         Instant start = Instant.now();
@@ -151,6 +147,7 @@ public class Main {
                     Node child = new Node(childState, node, action);
                     node.addChild(child);
                     if (childState.equals(goal)) {
+                        searchQueue.printStats();
                         return child.getPath();
                     }
                     // BFS: add to END of searchQueue
@@ -161,14 +158,15 @@ public class Main {
         }
 
         // If no path is found, return an empty ArrayList
+        searchQueue.printStats();
         return new ArrayList<>();
 
     }
 
     /**
-     * Performs depthLimitedSearch with the maximum possible int value as the depth limit
-     * Will return an empty path if maximum depth limit is exceeded
-     * @param root search tree node containing the initial puzzle board state
+     * Performs depthLimitedSearch with Java's maximum possible int value as the depth limit
+     * Will return an empty path if maximum depth limit is exceeded or no path to the goal state is found
+     * @param root node containing the initial puzzle board state
      * @param goal the goal puzzle board state
      * @return path from initial puzzle board state to goal puzzle board state or empty path
      */
@@ -205,6 +203,7 @@ public class Main {
                         Node child = new Node(childState, node, action);
                         node.addChild(child);
                         if (childState.equals(goal)) {
+                            searchQueue.printStats();
                             return child.getPath();
                         }
                         // DFS: add to FRONT of searchQueue
@@ -216,6 +215,7 @@ public class Main {
         }
 
         // If no path is found, return an empty ArrayList
+        searchQueue.printStats();
         return new ArrayList<>();
 
     }
@@ -233,15 +233,6 @@ public class Main {
         return new ArrayList<>();
     }
 
-    public static ArrayList<Node> uniformCostSearch(Node root, ArrayList<Byte> goal) {
-        return comparatorCostSearch(root, goal, new PathCostComparator());
-    }
-
-    public static ArrayList<Node> greedyBestFirstSearch(Node root, ArrayList<Byte> goal) {
-        // Some efficiency has been sacrificed for the purpose of code reusability here
-        // The else-if block in comparatorCostSearch is unnecessary for greedy best first search
-        return comparatorCostSearch(root, goal, new MisplacedTileComparator(goal));
-    }
 
     public static ArrayList<Node> comparatorCostSearch(Node root, ArrayList<Byte> goal, Comparator comparator) {
 
@@ -256,6 +247,7 @@ public class Main {
             ArrayList<Byte> nodeState = node.getState();
 
             if (nodeState.equals(goal)) {
+                searchQueue.printStats();
                 return node.getPath();
             }
 
@@ -271,8 +263,7 @@ public class Main {
                     node.addChild(child);
                 } else if (searchQueue.contains(childState)
                         && (comparator.compare(searchQueue.getNode(childState), child) > 0)) {
-                    searchQueue.remove(childState);
-                    searchQueue.add(child);
+                    searchQueue.replace(childState, child);
                     node.addChild(child);
                 }
 
@@ -280,10 +271,20 @@ public class Main {
         }
 
         // Return empty ArrayList if no path found
+        searchQueue.printStats();
         return new ArrayList<>();
     }
 
 
+    public static ArrayList<Node> uniformCostSearch(Node root, ArrayList<Byte> goal) {
+        return comparatorCostSearch(root, goal, new PathCostComparator());
+    }
+
+    public static ArrayList<Node> greedyBestFirstSearch(Node root, ArrayList<Byte> goal) {
+        // Some efficiency has been sacrificed for the purpose of code reusability here
+        // The else-if block in comparatorCostSearch is unnecessary for greedy best first search
+        return comparatorCostSearch(root, goal, new MisplacedTileComparator(goal));
+    }
 
 
     public static ArrayList<Node> aStarOneSearch(Node root, ArrayList<Byte> goal) {
@@ -292,6 +293,17 @@ public class Main {
 
     public static ArrayList<Node> aStarTwoSearch(Node root, ArrayList<Byte> goal) {
         return comparatorCostSearch(root, goal, new PathCostManhattanDistancesComparator(goal));
+    }
+
+    /**
+     * Uses the heuristic suggested on pages 105 and 119 of Russel/Norvig: Artificial Intelligence
+     * Relaxed problem: "A tile can move from square A to square B if B is blank"
+     * @param root search tree node containing the initial puzzle board state
+     * @param goal the goal puzzle board state
+     * @return path from initial puzzle board state to goal puzzle board state or empty path
+     */
+    public static ArrayList<Node> aStarThreeSearch(Node root, ArrayList<Byte> goal) {
+        return comparatorCostSearch(root, goal, new PathCostZeroSwapComparator(goal));
     }
 
     public static ArrayList<Byte> generateBoard(byte[] byteArray) {

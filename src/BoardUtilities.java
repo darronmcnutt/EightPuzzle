@@ -54,6 +54,7 @@ public class BoardUtilities {
     }
 
     public static int getSumManhattanDistances(ArrayList<Byte> board, ArrayList<Byte> goal) {
+        //TODO: Is there a way to do this better than quadratic time?
         int sum = 0;
         for(int i = 0; i < board.size(); i++) {
 
@@ -68,5 +69,29 @@ public class BoardUtilities {
         }
 
         return sum;
+    }
+
+    public static int getZeroSwapTotal(ArrayList<Byte> board, ArrayList<Byte> goal) {
+        int totalSwaps = 0;
+        board = new ArrayList<>(board);
+
+        while(!board.equals(goal)) {
+            int boardZeroLocation = board.indexOf((byte) 0);
+            byte goalTile = goal.get(boardZeroLocation);
+            if (goalTile != ( (byte) 0)) {
+                int swapLocation = board.indexOf(goalTile);
+                Collections.swap(board, boardZeroLocation, swapLocation);
+                totalSwaps++;
+            } else {
+                for(int i = 0; i < board.size(); i++) {
+                    if(!board.get(i).equals(goal.get(i))) {
+                        Collections.swap(board, boardZeroLocation, i);
+                        totalSwaps++;
+                        break;
+                    }
+                }
+            }
+        }
+        return totalSwaps;
     }
 }
