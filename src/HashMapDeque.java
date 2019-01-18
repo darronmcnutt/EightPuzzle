@@ -31,4 +31,6 @@ public class HashMapDeque {
     public boolean contains(ArrayList<Byte> state) {
         return stateNodeMap.containsKey(state);
     }
+
+    public Node getNode(ArrayList<Byte> state) { return stateNodeMap.get(state); }
 }

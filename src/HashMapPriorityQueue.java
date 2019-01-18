@@ -45,4 +45,6 @@ public class HashMapPriorityQueue {
         return stateNodeMap.get(state).getPathCost();
     }
 
+    public Node getNode(ArrayList<Byte> state) { return stateNodeMap.get(state); }
+
 }

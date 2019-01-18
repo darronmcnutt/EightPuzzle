@@ -66,6 +66,8 @@ public class Main {
             Scanner input = new Scanner(System.in);
             int option = input.nextInt();
 
+
+
             switch(option) {
                 case 1:
                     solution = breadthFirstSearch(root, goal);
@@ -83,10 +85,13 @@ public class Main {
                     solution = greedyBestFirstSearch(root, goal);
                     break;
                 case 6:
+                    solution = aStarOneSearch(root, goal);
                     break;
                 case 7:
+                    solution = aStarTwoSearch(root, goal);
                     break;
                 case 8:
+
                     break;
                 case 0:
                     finished = true;
@@ -100,6 +105,7 @@ public class Main {
             for (Node node : solution) {
                 System.out.println(node.toString());
             }
+
 
         }
 
@@ -228,8 +234,18 @@ public class Main {
     }
 
     public static ArrayList<Node> uniformCostSearch(Node root, ArrayList<Byte> goal) {
+        return comparatorCostSearch(root, goal, new PathCostComparator());
+    }
 
-        HashMapPriorityQueue searchQueue = new HashMapPriorityQueue(new PathCostComparator());
+    public static ArrayList<Node> greedyBestFirstSearch(Node root, ArrayList<Byte> goal) {
+        // Some efficiency has been sacrificed for the purpose of code reusability here
+        // The else-if block in comparatorCostSearch is unnecessary for greedy best first search
+        return comparatorCostSearch(root, goal, new MisplacedTileComparator(goal));
+    }
+
+    public static ArrayList<Node> comparatorCostSearch(Node root, ArrayList<Byte> goal, Comparator comparator) {
+
+        HashMapPriorityQueue searchQueue = new HashMapPriorityQueue(comparator);
         searchQueue.add(root);
 
         HashSet<ArrayList<Byte>> explored = new HashSet<>();
@@ -254,7 +270,7 @@ public class Main {
                     searchQueue.add(child);
                     node.addChild(child);
                 } else if (searchQueue.contains(childState)
-                       && (searchQueue.getPathCost(childState) > child.getPathCost())) {
+                        && (comparator.compare(searchQueue.getNode(childState), child) > 0)) {
                     searchQueue.remove(childState);
                     searchQueue.add(child);
                     node.addChild(child);
@@ -267,45 +283,21 @@ public class Main {
         return new ArrayList<>();
     }
 
-    public static ArrayList<Node> greedyBestFirstSearch(Node root, ArrayList<Byte> goal) {
 
-        HashMapPriorityQueue searchQueue = new HashMapPriorityQueue(new MisplacedTileComparator(goal));
-        searchQueue.add(root);
 
-        HashSet<ArrayList<Byte>> explored = new HashSet<>();
 
-        while(!searchQueue.isEmpty()) {
-
-            Node node = searchQueue.remove();
-            ArrayList<Byte> nodeState = node.getState();
-
-            if (nodeState.equals(goal)) {
-                return node.getPath();
-            }
-
-            explored.add(nodeState);
-            node.setExpanded(true);
-
-            for(Action action : node.getActions()) {
-                ArrayList<Byte> childState = BoardUtilities.performAction(nodeState, action);
-                Node child = new Node(childState, node, action);
-
-                if (!explored.contains(childState) && !searchQueue.contains(childState)) {
-                    searchQueue.add(child);
-                    node.addChild(child);
-                }
-
-            }
-        }
-
-        // Return empty ArrayList if no path found
-        return new ArrayList<>();
+    public static ArrayList<Node> aStarOneSearch(Node root, ArrayList<Byte> goal) {
+        return comparatorCostSearch(root, goal, new PathCostMisplacedTileComparator(goal));
     }
 
-    public static ArrayList<Byte> generateBoard(byte[] byteBoard) {
+    public static ArrayList<Node> aStarTwoSearch(Node root, ArrayList<Byte> goal) {
+        return comparatorCostSearch(root, goal, new PathCostManhattanDistancesComparator(goal));
+    }
+
+    public static ArrayList<Byte> generateBoard(byte[] byteArray) {
         ArrayList<Byte> board = new ArrayList<>();
 
-        for (byte b : byteBoard) {
+        for (byte b : byteArray) {
             board.add(b);
         }
 

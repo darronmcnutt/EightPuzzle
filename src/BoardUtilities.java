@@ -52,4 +52,21 @@ public class BoardUtilities {
 
         return numMisplaced;
     }
+
+    public static int getSumManhattanDistances(ArrayList<Byte> board, ArrayList<Byte> goal) {
+        int sum = 0;
+        for(int i = 0; i < board.size(); i++) {
+
+            // Find goal index of tile i
+            int j = goal.indexOf(board.get(i));
+
+            // Calculate board[iRow, iCol] from byte array indices
+            // Calculate  goal[jRow, jCol] from byte array indices
+            // Add Manhattan distance to running total
+            sum += Math.abs((i / 3) - (j / 3)) + Math.abs((i % 3) - (j % 3));
+
+        }
+
+        return sum;
+    }
 }
