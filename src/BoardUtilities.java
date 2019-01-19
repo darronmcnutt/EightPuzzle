@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Scanner;
 
 public class BoardUtilities {
     public static ArrayList<Byte> cloneAndSwap(ArrayList<Byte> board, int a, int b) {
@@ -94,4 +95,62 @@ public class BoardUtilities {
         }
         return totalSwaps;
     }
+
+    public static ArrayList<Byte> generateBoard(byte[] byteArray) {
+        ArrayList<Byte> board = new ArrayList<>();
+
+        for (byte b : byteArray) {
+            board.add(b);
+        }
+
+        return board;
+    }
+
+    public static ArrayList<Byte> selectBoard() {
+        ArrayList<Byte> board = null;
+        boolean done = false;
+
+        while (!done) {
+            System.out.println("------------------------------------");
+            System.out.println("Choose a difficulty level");
+            System.out.println("------------------------------------");
+            System.out.println("1 - Easy");
+            System.out.println("2 - Medium");
+            System.out.println("3 - Hard");
+            System.out.println("------------------------------------");
+            System.out.println("0 - Quit");
+            System.out.println("------------------------------------");
+            System.out.print("YOUR SELECTION: ");
+
+            Scanner input = new Scanner(System.in);
+            int option = input.nextInt();
+
+            switch (option) {
+                case 1:
+                    byte[] easy = {1, 3, 4, 8, 6, 2, 7, 0, 5};
+                    board = generateBoard(easy);
+                    done = true;
+                    break;
+                case 2:
+                    byte[] medium = {2, 8, 1, 0, 4, 3, 7, 6, 5};
+                    board = generateBoard(medium);
+                    done = true;
+                    break;
+                case 3:
+                    byte[] hard = {5, 6, 7, 4, 0, 8, 3, 2, 1};
+                    board = generateBoard(hard);
+                    done = true;
+                    break;
+                case 0:
+                    board = new ArrayList<>();
+                    done = true;
+                    break;
+                default:
+                    System.out.println("INVALID SELECTION");
+                    break;
+            }
+        }
+        return board;
+    }
+
 }
