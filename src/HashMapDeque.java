@@ -10,8 +10,6 @@ public class HashMapDeque {
     private ArrayDeque<Node> deque;
     private HashMap<ArrayList<Byte>, Node> stateNodeMap;
 
-    private Stats stats = Stats.getInstance();
-
     private int totalNodesDequeued = 0;
     private int maxQueueSize = 0;
 
@@ -72,11 +70,6 @@ public class HashMapDeque {
      * Prints total nodes dequeued and max queue size reached
      */
     public void printStats() {
-
-        // Update Stats singleton (used for iterative deepening)
-        stats.setTotalNodesDequeued(stats.getTotalNodesDequeued() + totalNodesDequeued);
-        stats.setMaxQueueSize(Math.max(stats.getMaxQueueSize(), maxQueueSize));
-
         System.out.println("  Total nodes dequeued: " + totalNodesDequeued);
         System.out.println("Max queue size reached: " + maxQueueSize);
     }

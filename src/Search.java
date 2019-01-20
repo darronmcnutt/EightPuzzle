@@ -64,7 +64,7 @@ public class Search {
      * @return path from root Node to goal state, represented as an ArrayList of Nodes. Empty ArrayList if no path found.
      */
     public static ArrayList<Node> depthFirst(Node root, ArrayList<Byte> goal) {
-        return depthLimited(root, goal, Integer.MAX_VALUE);
+        return depthLimited(root, goal, Integer.MAX_VALUE, new HashMapDeque());
     }
 
     /**
@@ -74,16 +74,14 @@ public class Search {
      * @param maxDepth depth limit for the search
      * @return path from root Node to goal state, represented as an ArrayList of Nodes. Empty ArrayList if no path found.
      */
-    public static ArrayList<Node> depthLimited(Node root, ArrayList<Byte> goal, int maxDepth) {
+    public static ArrayList<Node> depthLimited(Node root, ArrayList<Byte> goal, int maxDepth, HashMapDeque searchQueue) {
 
         if (root.getState().equals(goal)) {
             return root.getPath();
         }
 
-        HashMapDeque searchQueue = new HashMapDeque();
-        searchQueue.add(root);
-
         HashSet<ArrayList<Byte>> explored = new HashSet<>();
+        searchQueue.add(root);
 
         while(!searchQueue.isEmpty()) {
             Node node = searchQueue.remove();
@@ -122,8 +120,7 @@ public class Search {
     }
 
     /**
-     * Iterative Deepening search. Uses Stats singleton to keep track of total nodes dequeued
-     * and max queue size. Repeatedly calls depth limited search function.
+     * Iterative Deepening search. Repeatedly calls depth limited search function.
      * @param root Node containing the problem state of the puzzle board
      * @param goal ArrayList of Bytes representing the goal state of the puzzle board
      * @return path from root Node to goal state, represented as an ArrayList of Nodes. Empty ArrayList if no path found.
@@ -131,20 +128,15 @@ public class Search {
     public static ArrayList<Node> iterativeDeepening(Node root, ArrayList<Byte> goal) {
         ArrayList<Node> path = null;
 
-        // Reset Stats singleton to zero
-        Stats stats = Stats.getInstance();
-        stats.setMaxQueueSize(0);
-        stats.setTotalNodesDequeued(0);
+        HashMapDeque searchQueue = new HashMapDeque();
 
         for(int depth = 0; depth < Integer.MAX_VALUE; depth++) {
-            path = depthLimited(root, goal, depth);
+            path = depthLimited(root, goal, depth, searchQueue);
             if (!path.isEmpty()) {
-                stats.printStats();
                 return path;
             }
         }
 
-        stats.printStats();
         return new ArrayList<>();
     }
 
@@ -282,9 +274,10 @@ public class Search {
             System.out.println("6 - A*1 (number of misplaced tiles)");
             System.out.println("7 - A*2 (sum of Manhattan distances)");
             System.out.println("8 - A*3 (sum of Manhattan costs)");
+            System.out.println("9 - Run all searches (stats only)");
             System.out.println("------------------------------------");
-            System.out.println("9 - Return to difficulty level menu");
-            System.out.println("0 - Quit");
+            System.out.println("10 - Return to difficulty level menu");
+            System.out.println("11 - Quit");
             System.out.println("------------------------------------");
             System.out.print("YOUR SELECTION: ");
 
@@ -364,7 +357,7 @@ public class Search {
                     break;
                 case 8:
                     System.out.println("------------------------------------");
-                    System.out.println("       A*3 (custom heuristic) ");
+                    System.out.println("     A*3 (sum of Manhattan costs)   ");
                     System.out.println("------------------------------------");
 
                     start = Instant.now();
@@ -373,9 +366,13 @@ public class Search {
                     System.out.println("        Execution time: " + Duration.between(start, end).toMillis() + "ms\n");
                     break;
                 case 9:
+                    runAllSearches(board, goal);
                     return false;
-                case 0:
+                case 10:
+                    return false;
+                case 11:
                     return true;
+
                 default:
                     System.out.println("INVALID SELECTION");
                     break;
@@ -420,6 +417,7 @@ public class Search {
                     solution = breadthFirst(root, goal);
                     end = Instant.now();
                     System.out.println("        Execution time: " + Duration.between(start, end).toMillis() + "ms\n");
+                    System.out.println(solution.get(solution.size() - 1).toString());
                     break;
                 case 2:
                     System.out.println("------------------------------------");
@@ -430,6 +428,7 @@ public class Search {
                     solution = depthFirst(root, goal);
                     end = Instant.now();
                     System.out.println("        Execution time: " + Duration.between(start, end).toMillis() + "ms\n");
+                    System.out.println(solution.get(solution.size() - 1).toString());
                     break;
                 case 3:
                     System.out.println("------------------------------------");
@@ -440,6 +439,7 @@ public class Search {
                     solution = iterativeDeepening(root, goal);
                     end = Instant.now();
                     System.out.println("        Execution time: " + Duration.between(start, end).toMillis() + "ms\n");
+                    System.out.println(solution.get(solution.size() - 1).toString());
                     break;
                 case 4:
                     System.out.println("------------------------------------");
@@ -450,6 +450,7 @@ public class Search {
                     solution = uniformCost(root, goal);
                     end = Instant.now();
                     System.out.println("        Execution time: " + Duration.between(start, end).toMillis() + "ms\n");
+                    System.out.println(solution.get(solution.size() - 1).toString());
                     break;
                 case 5:
                     System.out.println("------------------------------------");
@@ -460,6 +461,7 @@ public class Search {
                     solution = greedyBestFirst(root, goal);
                     end = Instant.now();
                     System.out.println("        Execution time: " + Duration.between(start, end).toMillis() + "ms\n");
+                    System.out.println(solution.get(solution.size() - 1).toString());
                     break;
                 case 6:
                     System.out.println("------------------------------------");
@@ -470,6 +472,7 @@ public class Search {
                     solution = aStarOne(root, goal);
                     end = Instant.now();
                     System.out.println("        Execution time: " + Duration.between(start, end).toMillis() + "ms\n");
+                    System.out.println(solution.get(solution.size() - 1).toString());
                     break;
                 case 7:
                     System.out.println("------------------------------------");
@@ -480,6 +483,7 @@ public class Search {
                     solution = aStarTwo(root, goal);
                     end = Instant.now();
                     System.out.println("        Execution time: " + Duration.between(start, end).toMillis() + "ms\n");
+                    System.out.println(solution.get(solution.size() - 1).toString());
                     break;
                 case 8:
                     System.out.println("------------------------------------");
@@ -490,6 +494,7 @@ public class Search {
                     solution = aStarThree(root, goal);
                     end = Instant.now();
                     System.out.println("        Execution time: " + Duration.between(start, end).toMillis() + "ms\n");
+                    System.out.println(solution.get(solution.size() - 1).toString());
                     break;
 
             }
