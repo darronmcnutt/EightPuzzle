@@ -1,16 +1,17 @@
 import java.util.ArrayList;
 import java.util.Comparator;
 
+
 /**
  * Compares f(n) = g(n) + h(n) between two Nodes where
  * g(n) = path cost
- * h(n) = sum of the Manhattan Distances
+ * h(n) = sum of the Manhattan Distance of each tile from goal
  */
-public class PathCostManhattanDistancesComparator implements Comparator<Node> {
+public class PathCostManhattanDistanceComparator implements Comparator<Node> {
 
     private ArrayList<Byte> goal;
 
-    public PathCostManhattanDistancesComparator(ArrayList<Byte> goal) {
+    public PathCostManhattanDistanceComparator(ArrayList<Byte> goal) {
         this.goal = goal;
     }
 

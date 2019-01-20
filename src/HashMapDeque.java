@@ -80,4 +80,6 @@ public class HashMapDeque {
         System.out.println("  Total nodes dequeued: " + totalNodesDequeued);
         System.out.println("Max queue size reached: " + maxQueueSize);
     }
+
+    public Node getNode(ArrayList<Byte> state) { return stateNodeMap.get(state); }
 }

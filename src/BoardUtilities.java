@@ -74,7 +74,7 @@ public final class BoardUtilities {
         int misplacedTilesCost = 0;
 
         for (int i = 0; i < board.size(); i++) {
-            if (board.get(i).equals(goal.get(i))) {
+            if (!board.get(i).equals(goal.get(i))) {
                 misplacedTilesCost += board.get(i);
             }
         }
@@ -83,13 +83,32 @@ public final class BoardUtilities {
     }
 
     /**
-     * Calculates the the sum of the Manhattan distance of each tile from its goal position
+     * Calculates the number of misplaced tiles in the puzzle board.
+     * @param board puzzle board representing the problem state
+     * @param goal puzzle board representing the goal state
+     * @return the number of misplaced tiles in the puzzle board.
+     */
+    public static int getNumMisplacedTiles(ArrayList<Byte> board, ArrayList<Byte> goal) {
+
+        int numMisplacedTiles = 0;
+
+        for (int i = 0; i < board.size(); i++) {
+            if (!board.get(i).equals(goal.get(i))) {
+                numMisplacedTiles++;
+            }
+        }
+
+        return numMisplacedTiles;
+    }
+
+    /**
+     * Calculates the the sum of the Manhattan COST of each tile from its goal position
      * For the modified Eight Puzzle, this multiplies the value of each Manhattan distance by value of the tile (cost of move)
      * @param board puzzle board representing the problem state
      * @param goal puzzle board representing the goal state
-     * @return sum of the Manhattan distance of each tile from its goal position
+     * @return sum of the Manhattan COST of each tile from its goal position
      */
-    public static int getSumManhattanDistances(ArrayList<Byte> board, ArrayList<Byte> goal) {
+    public static int getSumManhattanCosts(ArrayList<Byte> board, ArrayList<Byte> goal) {
         //TODO: Is there a way to do this better than quadratic time?
         int sum = 0;
         for(int i = 0; i < board.size(); i++) {
@@ -106,6 +125,31 @@ public final class BoardUtilities {
             int cost = board.get(i) * manhattan;
 
             sum += cost;
+        }
+
+        return sum;
+    }
+
+    /**
+     * Calculates the the sum of the Manhattan DISTANCE of each tile from its goal position
+     * @param board puzzle board representing the problem state
+     * @param goal puzzle board representing the goal state
+     * @return sum of the Manhattan DISTANCE of each tile from its goal position
+     */
+    public static int getSumManhattanDistances(ArrayList<Byte> board, ArrayList<Byte> goal) {
+        //TODO: Is there a way to do this better than quadratic time?
+        int sum = 0;
+        for(int i = 0; i < board.size(); i++) {
+
+            // Find goal index of tile i
+            int j = goal.indexOf(board.get(i));
+
+            // Calculate board index (iRow, iCol) from byte array indices
+            // Calculate  goal index (jRow, jCol) from byte array indices
+            // Calculate Manhattan Distance
+            int manhattan = Math.abs((i / 3) - (j / 3)) + Math.abs((i % 3) - (j % 3));
+
+            sum += manhattan;
         }
 
         return sum;

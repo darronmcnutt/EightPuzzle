@@ -99,6 +99,7 @@ public class Search {
 
                 for(Action action : node.getActions()) {
                     ArrayList<Byte> childState = BoardUtilities.performAction(nodeState, action);
+
                     if (!explored.contains(childState) && !searchQueue.contains(childState)) {
                         Node child = new Node(childState, node, action);
                         node.addChild(child);
@@ -218,23 +219,33 @@ public class Search {
     }
 
     /**
-     * A-star 1 search. Uses comparatorCostSearch helper with PathCostMisplacedTileComparator
+     * A-star 1 search. Uses comparatorCostSearch helper with PathCostMisplacedTilesComparator
      * @param root Node containing the problem state of the puzzle board
      * @param goal ArrayList of Bytes representing the goal state of the puzzle board
      * @return path from root Node to goal state, represented as an ArrayList of Nodes. Empty ArrayList if no path found.
      */
     public static ArrayList<Node> aStarOne(Node root, ArrayList<Byte> goal) {
-        return comparatorCostSearch(root, goal, new PathCostMisplacedTileComparator(goal));
+        return comparatorCostSearch(root, goal, new PathCostMisplacedTilesComparator(goal));
     }
 
     /**
-     * A-star 2 search. Uses comparatorCostSearch helper with PathCostManhattanDistancesComparator
+     * A-star 2 search. Uses comparatorCostSearch helper with PathCostManhattanDistanceComparator
      * @param root Node containing the problem state of the puzzle board
      * @param goal ArrayList of Bytes representing the goal state of the puzzle board
      * @return path from root Node to goal state, represented as an ArrayList of Nodes. Empty ArrayList if no path found.
      */
     public static ArrayList<Node> aStarTwo(Node root, ArrayList<Byte> goal) {
-        return comparatorCostSearch(root, goal, new PathCostManhattanDistancesComparator(goal));
+        return comparatorCostSearch(root, goal, new PathCostManhattanDistanceComparator(goal));
+    }
+
+    /**
+     * A-star 3 search. Uses comparatorCostSearch helper with PathCostManhattanCostComparator
+     * @param root Node containing the problem state of the puzzle board
+     * @param goal ArrayList of Bytes representing the goal state of the puzzle board
+     * @return path from root Node to goal state, represented as an ArrayList of Nodes. Empty ArrayList if no path found.
+     */
+    public static ArrayList<Node> aStarThree(Node root, ArrayList<Byte> goal) {
+        return comparatorCostSearch(root, goal, new PathCostManhattanCostComparator(goal));
     }
 
     /**
@@ -244,7 +255,7 @@ public class Search {
      * @param goal the goal puzzle board state
      * @return path from initial puzzle board state to goal puzzle board state or empty path
      */
-    public static ArrayList<Node> aStarThree(Node root, ArrayList<Byte> goal) {
+    public static ArrayList<Node> aStarFour(Node root, ArrayList<Byte> goal) {
         return comparatorCostSearch(root, goal, new PathCostZeroSwapComparator(goal));
     }
 
@@ -270,7 +281,7 @@ public class Search {
             System.out.println("5 - Best-first (Greedy)");
             System.out.println("6 - A*1 (number of misplaced tiles)");
             System.out.println("7 - A*2 (sum of Manhattan distances)");
-            System.out.println("8 - A*3 (custom heuristic)");
+            System.out.println("8 - A*3 (sum of Manhattan costs)");
             System.out.println("------------------------------------");
             System.out.println("9 - Return to difficulty level menu");
             System.out.println("0 - Quit");
@@ -380,10 +391,10 @@ public class Search {
 //            // Print with heuristics
 //            for (Node node : solution) {
 //                System.out.println("h1(n) = " + BoardUtilities.getMisplacedTilesCost(node.getState(), goal) +
-//                                   " h2(n) = " + BoardUtilities.getSumManhattanDistances(node.getState(), goal) +
+//                                   " h2(n) = " + BoardUtilities.getSumManhattanCosts(node.getState(), goal) +
 //                                   " h3(n) = " + BoardUtilities.getZeroSwapCost(node.getState(), goal));
 //                System.out.println("f(n) = " + (node.getPathCost() + BoardUtilities.getMisplacedTilesCost(node.getState(), goal)) +
-//                        " f(n) = " + (node.getPathCost() + BoardUtilities.getSumManhattanDistances(node.getState(), goal)) +
+//                        " f(n) = " + (node.getPathCost() + BoardUtilities.getSumManhattanCosts(node.getState(), goal)) +
 //                        " f(n) = " + (node.getPathCost() + BoardUtilities.getZeroSwapCost(node.getState(), goal)));
 //                System.out.println(node.toString());
 //            }

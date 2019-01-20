@@ -4,13 +4,13 @@ import java.util.Comparator;
 /**
  * Compares f(n) = g(n) + h(n) between two Nodes where
  * g(n) = path cost
- * h(n) = number of misplaced tiles
+ * h(n) = total cost of misplaced tiles
  */
-public class PathCostMisplacedTileComparator implements Comparator<Node> {
+public class PathCostMisplacedTileCostComparator implements Comparator<Node> {
 
     private ArrayList<Byte> goal;
 
-    public PathCostMisplacedTileComparator(ArrayList<Byte> goal) {
+    public PathCostMisplacedTileCostComparator(ArrayList<Byte> goal) {
         this.goal = goal;
     }
 
