@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.Comparator;
 
+/**
+ * Compares the number of misplaced tiles between two puzzle board states
+ */
 public class MisplacedTileComparator implements Comparator<Node> {
 
     ArrayList<Byte> goal;
@@ -11,7 +14,7 @@ public class MisplacedTileComparator implements Comparator<Node> {
 
     @Override
     public int compare(Node first, Node second) {
-        return BoardUtilities.getNumMisplacedTiles(first.getState(), this.goal) -
-               BoardUtilities.getNumMisplacedTiles(second.getState(), this.goal);
+        return BoardUtilities.getMisplacedTilesCost(first.getState(), this.goal) -
+               BoardUtilities.getMisplacedTilesCost(second.getState(), this.goal);
     }
 }

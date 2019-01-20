@@ -1,6 +1,10 @@
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * Search tree node containing the state of the puzzle board, links to
+ * parent and child nodes, and other bookkeeping data
+ */
 public class Node {
 
     private ArrayList<Byte> state;
@@ -10,8 +14,13 @@ public class Node {
 
     private Action action;
     private int depth;
+
+    // Cost of the previous move that resulted in this Node
     private int cost;
+
+    // Total cost from root Node to this Node
     private int pathCost;
+
     private boolean expanded;
 
     /**
@@ -23,7 +32,6 @@ public class Node {
         this.depth = 0;
         this.cost = 0;
         this.pathCost = 0;
-
         this.expanded = false;
         this.children = new ArrayList<>();
     }
@@ -32,7 +40,7 @@ public class Node {
      * Constructor for child nodes in search tree
      * @param state the state of the puzzle board after an action is performed
      * @param parent the parent of this node
-     * @param action the action performed that resulted in the state
+     * @param action the action performed that resulted in this puzzle board state
      */
     public Node(ArrayList<Byte> state, Node parent, Action action) {
         this.state = state;
@@ -48,14 +56,18 @@ public class Node {
         this.children = new ArrayList<>();
     }
 
-    public ArrayList<Byte> getState() {
-        return state;
+    public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
+    }
+
+    public void addChild(Node child) {
+        this.children.add(child);
     }
 
     public int getZeroLocation() { return this.state.indexOf((byte) 0); }
 
-    public void addChild(Node child) {
-        this.children.add(child);
+    public ArrayList<Byte> getState() {
+        return state;
     }
 
     public int getDepth() {
@@ -64,10 +76,12 @@ public class Node {
 
     public int getPathCost() { return pathCost; }
 
-    public void setExpanded(boolean expanded) {
-        this.expanded = expanded;
-    }
 
+
+    /**
+     * Returns a path from the root Node to the current Node
+     * @return path from the root Node to the current Node as an ArrayList
+     */
     public ArrayList<Node> getPath() {
         ArrayList<Node> path = new ArrayList<>();
         path.add(this);
@@ -84,6 +98,11 @@ public class Node {
 
     }
 
+    /**
+     * The successor function. Returns list of possible actions - direction of movement of the zero tile (empty tile)
+     * in puzzle board (UP, DOWN, LEFT, RIGHT)
+     * @return an array of Action objects
+     */
     public Action[] getActions() {
         Action[] actions;
 
@@ -122,6 +141,10 @@ public class Node {
         return actions;
     }
 
+    /**
+     * Returns the String representation of this Node
+     * @return the String representation of this Node
+     */
     @Override
     public String toString() {
 
