@@ -10,6 +10,11 @@ public class Main {
         // Problem state of the puzzle board
         ArrayList<Byte> board = null;
 
+        //DEBUG
+        byte[] hard = {5, 6, 7, 4, 0, 8, 3, 2, 1};
+        board = BoardUtilities.generateBoard(hard);
+        Search.depthLimited(new Node(board),goal,30);
+
         boolean done = false;
 
         while(!done) {

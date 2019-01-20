@@ -1,9 +1,6 @@
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Static utility class of graph search functions
@@ -91,7 +88,7 @@ public class Search {
         while(!searchQueue.isEmpty()) {
             Node node = searchQueue.remove();
 
-            // Node is eligible for expansion only if less than maxDepth
+            // Node is eligible for expansion only if node depth is less than maxDepth
             // Goal check occurs at time of node creation, not expansion
             if (node.getDepth() < maxDepth) {
                 ArrayList<Byte> nodeState = node.getState();
@@ -146,6 +143,7 @@ public class Search {
             }
         }
 
+        stats.printStats();
         return new ArrayList<>();
     }
 
@@ -154,9 +152,9 @@ public class Search {
      * @param root Node containing the problem state of the puzzle board
      * @param goal ArrayList of Bytes representing the goal state of the puzzle board
      * @param comparator The evaluation function f(n) = g(n) + h(n)
-     * @return
+     * @return path from root Node to goal state, represented as an ArrayList of Nodes. Empty ArrayList if no path found.
      */
-    public static ArrayList<Node> comparatorCostSearch(Node root, ArrayList<Byte> goal, Comparator comparator) {
+    public static ArrayList<Node> comparatorCostSearch(Node root, ArrayList<Byte> goal, Comparator<Node> comparator) {
 
         HashMapPriorityQueue searchQueue = new HashMapPriorityQueue(comparator);
         searchQueue.add(root);
@@ -260,9 +258,8 @@ public class Search {
         Node root = new Node(board);
         ArrayList<Node> solution = null;
         Instant start, end;
-        boolean done = false;
 
-        while (!done) {
+        while (true) {
             System.out.println("------------------------------------");
             System.out.println("      Choose a search strategy");
             System.out.println("------------------------------------");
@@ -376,24 +373,23 @@ public class Search {
             System.out.println("\n\nPress ENTER to view search path");
             input.nextLine(); input.nextLine();
 
-//            for (Node node : solution) {
-//                System.out.println(node.toString());
-//            }
-
-            // Print with heuristics
             for (Node node : solution) {
-                System.out.println("h1(n) = " + BoardUtilities.getMisplacedTilesCost(node.getState(), goal) +
-                                   " h2(n) = " + BoardUtilities.getSumManhattanDistances(node.getState(), goal) +
-                                   " h3(n) = " + BoardUtilities.getZeroSwapCost(node.getState(), goal) +
-                                   " ideal = " + (31 - node.getPathCost()));
-                System.out.println("f(n) = " + (node.getPathCost() + BoardUtilities.getMisplacedTilesCost(node.getState(), goal)) +
-                        " f(n) = " + (node.getPathCost() + BoardUtilities.getSumManhattanDistances(node.getState(), goal)) +
-                        " f(n) = " + (node.getPathCost() + BoardUtilities.getZeroSwapCost(node.getState(), goal)));
                 System.out.println(node.toString());
             }
 
+//            // Print with heuristics
+//            for (Node node : solution) {
+//                System.out.println("h1(n) = " + BoardUtilities.getMisplacedTilesCost(node.getState(), goal) +
+//                                   " h2(n) = " + BoardUtilities.getSumManhattanDistances(node.getState(), goal) +
+//                                   " h3(n) = " + BoardUtilities.getZeroSwapCost(node.getState(), goal));
+//                System.out.println("f(n) = " + (node.getPathCost() + BoardUtilities.getMisplacedTilesCost(node.getState(), goal)) +
+//                        " f(n) = " + (node.getPathCost() + BoardUtilities.getSumManhattanDistances(node.getState(), goal)) +
+//                        " f(n) = " + (node.getPathCost() + BoardUtilities.getZeroSwapCost(node.getState(), goal)));
+//                System.out.println(node.toString());
+//            }
+
         }
-        return true;
+
     }
 
 

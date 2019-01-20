@@ -4,7 +4,8 @@ import java.util.Scanner;
 
 /**
  * Static utility class that performs operations on puzzle boards stored
- * as an ArrayList of Byte objects.
+ * as an ArrayList of Byte objects. Alternatively, I could have chosen to
+ * create a Board class and use these functions as instance methods.
  */
 public final class BoardUtilities {
 
@@ -73,7 +74,7 @@ public final class BoardUtilities {
         int misplacedTilesCost = 0;
 
         for (int i = 0; i < board.size(); i++) {
-            if (board.get(i) != goal.get(i)) {
+            if (board.get(i).equals(goal.get(i))) {
                 misplacedTilesCost += board.get(i);
             }
         }

@@ -6,13 +6,14 @@ import java.util.*;
  * method and the maximum size of the queue.
  */
 public class HashMapDeque {
-    ArrayDeque<Node> deque;
-    HashMap<ArrayList<Byte>, Node> stateNodeMap;
 
-    Stats stats = Stats.getInstance();
+    private ArrayDeque<Node> deque;
+    private HashMap<ArrayList<Byte>, Node> stateNodeMap;
 
-    int totalNodesDequeued = 0;
-    int maxQueueSize = 0;
+    private Stats stats = Stats.getInstance();
+
+    private int totalNodesDequeued = 0;
+    private int maxQueueSize = 0;
 
     public HashMapDeque() {
         this.deque = new ArrayDeque<>();
@@ -21,7 +22,7 @@ public class HashMapDeque {
 
     /**
      * Adds a Node object to the end of the queue
-     * @param node
+     * @param node Node object
      */
     public void add(Node node) {
         deque.add(node);
@@ -31,14 +32,13 @@ public class HashMapDeque {
 
     /**
      * Adds a Node object to the front of the queue
-     * @param node
+     * @param node Node object
      */
     public void addFirst(Node node) {
         deque.addFirst(node);
         stateNodeMap.put(node.getState(), node);
         maxQueueSize = Math.max(deque.size(), maxQueueSize);
     }
-
 
     /**
      * Removes a Node object from the front of the queue and returns it
@@ -67,8 +67,6 @@ public class HashMapDeque {
     public boolean contains(ArrayList<Byte> state) {
         return stateNodeMap.containsKey(state);
     }
-
-    public Node getNode(ArrayList<Byte> state) { return stateNodeMap.get(state); }
 
     /**
      * Prints total nodes dequeued and max queue size reached

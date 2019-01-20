@@ -8,7 +8,7 @@ import java.util.Comparator;
  */
 public class PathCostZeroSwapComparator implements Comparator<Node> {
 
-    ArrayList<Byte> goal;
+    private ArrayList<Byte> goal;
 
     public PathCostZeroSwapComparator(ArrayList<Byte> goal) {
         this.goal = goal;

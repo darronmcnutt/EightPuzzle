@@ -9,20 +9,20 @@ import java.util.PriorityQueue;
  * method and the maximum size of the queue.
  */
 public class HashMapPriorityQueue {
-    PriorityQueue<Node> priorityQueue;
-    HashMap<ArrayList<Byte>, Node> stateNodeMap;
+    private PriorityQueue<Node> priorityQueue;
+    private HashMap<ArrayList<Byte>, Node> stateNodeMap;
 
-    int totalNodesDequeued = 0;
-    int maxQueueSize = 0;
+    private int totalNodesDequeued = 0;
+    private int maxQueueSize = 0;
 
-    public HashMapPriorityQueue(Comparator comparator) {
+    public HashMapPriorityQueue(Comparator<Node> comparator) {
         this.priorityQueue = new PriorityQueue<>(1, comparator);
         this.stateNodeMap = new HashMap<>();
     }
 
     /**
      * Adds a Node object to the end of the queue
-     * @param node
+     * @param node Node object
      */
     public void add(Node node) {
         priorityQueue.add(node);

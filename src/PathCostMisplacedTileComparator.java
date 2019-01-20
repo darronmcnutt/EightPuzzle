@@ -8,7 +8,7 @@ import java.util.Comparator;
  */
 public class PathCostMisplacedTileComparator implements Comparator<Node> {
 
-    ArrayList<Byte> goal;
+    private ArrayList<Byte> goal;
 
     public PathCostMisplacedTileComparator(ArrayList<Byte> goal) {
         this.goal = goal;

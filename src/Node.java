@@ -8,20 +8,17 @@ import java.util.Collections;
 public class Node {
 
     private ArrayList<Byte> state;
-
     private Node parent;
     private ArrayList<Node> children;
-
     private Action action;
     private int depth;
+    private boolean expanded;
 
     // Cost of the previous move that resulted in this Node
     private int cost;
 
     // Total cost from root Node to this Node
     private int pathCost;
-
-    private boolean expanded;
 
     /**
      * Constructor for root node in search tree
@@ -117,22 +114,22 @@ public class Node {
                 actions = new Action[] { Action.LEFT, Action.DOWN };
                 break;
             case 3:
-                actions = new Action[] { Action.UP, Action.RIGHT, Action.DOWN };
+                actions = new Action[] { Action.RIGHT, Action.UP, Action.DOWN };
                 break;
             case 4:
-                actions = new Action[] { Action.UP, Action.DOWN, Action.LEFT, Action.RIGHT };
+                actions = new Action[] { Action.LEFT, Action.RIGHT, Action.UP, Action.DOWN };
                 break;
             case 5:
-                actions = new Action[] { Action.UP, Action.DOWN, Action.LEFT };
+                actions = new Action[] { Action.LEFT, Action.UP, Action.DOWN,  };
                 break;
             case 6:
-                actions = new Action[] { Action.UP, Action.RIGHT };
+                actions = new Action[] { Action.RIGHT, Action.UP };
                 break;
             case 7:
-                actions = new Action[] { Action.LEFT, Action.UP, Action.RIGHT };
+                actions = new Action[] { Action.LEFT, Action.RIGHT, Action.UP };
                 break;
             case 8:
-                actions = new Action[] { Action.UP, Action.LEFT };
+                actions = new Action[] { Action.LEFT, Action.UP };
                 break;
             default:
                 //TODO: Throwing error may be better than returning empty array of actions

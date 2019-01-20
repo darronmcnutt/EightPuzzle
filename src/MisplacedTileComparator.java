@@ -6,7 +6,7 @@ import java.util.Comparator;
  */
 public class MisplacedTileComparator implements Comparator<Node> {
 
-    ArrayList<Byte> goal;
+    private ArrayList<Byte> goal;
 
     public MisplacedTileComparator(ArrayList<Byte> goal) {
         this.goal = goal;
