@@ -80,18 +80,17 @@ public class Search {
             return root.getPath();
         }
 
-        HashSet<ArrayList<Byte>> explored = new HashSet<>();
         searchQueue.add(root);
+        HashSet<ArrayList<Byte>> explored = new HashSet<>();
 
         while(!searchQueue.isEmpty()) {
             Node node = searchQueue.remove();
+            ArrayList<Byte> nodeState = node.getState();
+            explored.add(nodeState);
 
             // Node is eligible for expansion only if node depth is less than maxDepth
             // Goal check occurs at time of node creation, not expansion
             if (node.getDepth() < maxDepth) {
-                ArrayList<Byte> nodeState = node.getState();
-
-                explored.add(nodeState);
 
                 node.setExpanded(true);
 
@@ -401,7 +400,7 @@ public class Search {
     }
 
 
-    public static boolean runAllSearches(ArrayList<Byte> board, ArrayList<Byte> goal) {
+    public static void runAllSearches(ArrayList<Byte> board, ArrayList<Byte> goal) {
         Node root = new Node(board);
         ArrayList<Node> solution = null;
         Instant start, end;
@@ -500,6 +499,5 @@ public class Search {
             }
         }
 
-        return true;
     }
 }

@@ -3,12 +3,14 @@ import java.util.*;
 /**
  * Wrapper for Java's ArrayDeque adding a HashMap for constant time lookup of
  * Node objects by state. Keeps track of total number of nodes dequeued via the remove
- * method and the maximum size of the queue.
+ * method and the maximum size of the queue. NOTE: generally a bad idea to hash
+ * mutable data, however within the context of this program the ArrayList of Bytes
+ * is never modified once created.
  */
 public class HashMapDeque {
 
-    private ArrayDeque<Node> deque;
-    private HashMap<ArrayList<Byte>, Node> stateNodeMap;
+    private final ArrayDeque<Node> deque;
+    private final HashMap<ArrayList<Byte>, Node> stateNodeMap;
 
     private int totalNodesDequeued = 0;
     private int maxQueueSize = 0;
@@ -73,6 +75,24 @@ public class HashMapDeque {
         System.out.println("  Total nodes dequeued: " + totalNodesDequeued);
         System.out.println("Max queue size reached: " + maxQueueSize);
     }
+
+    /**
+     * Checks whether a node with the same state is on the queue with a larger depth value
+     * @param state puzzle board state to test
+     * @param depth depth of the puzzle board state
+     * @return true or false
+     */
+    public boolean isStateOnQueueWithLargerDepth(ArrayList<Byte> state, int depth) {
+        if (stateNodeMap.containsKey(state)) {
+            Node node = stateNodeMap.get(state);
+            if (depth < node.getDepth()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     public Node getNode(ArrayList<Byte> state) { return stateNodeMap.get(state); }
 }

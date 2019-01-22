@@ -8,7 +8,7 @@ import java.util.Comparator;
  */
 public class PathCostManhattanCostComparator implements Comparator<Node> {
 
-    private ArrayList<Byte> goal;
+    private final ArrayList<Byte> goal;
 
     public PathCostManhattanCostComparator(ArrayList<Byte> goal) {
         this.goal = goal;

@@ -3,7 +3,7 @@ import java.util.Collections;
 import java.util.Scanner;
 
 /**
- * Static utility class that performs operations on puzzle boards stored
+ * Static utility class that performs operations on a puzzle board stored
  * as an ArrayList of Byte objects. Alternatively, I could have chosen to
  * create a Board class and use these functions as instance methods.
  */
@@ -18,7 +18,7 @@ public final class BoardUtilities {
      * @param b array index of tile to be swapped
      * @return a new puzzle board with indices a and b swapped
      */
-    public static ArrayList<Byte> cloneAndSwap(ArrayList<Byte> board, int a, int b) {
+    private static ArrayList<Byte> cloneAndSwap(ArrayList<Byte> board, int a, int b) {
 
         // Clone the puzzle board
         ArrayList<Byte> newBoard = new ArrayList<>(board);

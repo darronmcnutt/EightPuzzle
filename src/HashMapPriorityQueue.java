@@ -9,8 +9,8 @@ import java.util.PriorityQueue;
  * method and the maximum size of the queue.
  */
 public class HashMapPriorityQueue {
-    private PriorityQueue<Node> priorityQueue;
-    private HashMap<ArrayList<Byte>, Node> stateNodeMap;
+    private final PriorityQueue<Node> priorityQueue;
+    private final HashMap<ArrayList<Byte>, Node> stateNodeMap;
 
     private int totalNodesDequeued = 0;
     private int maxQueueSize = 0;
@@ -49,7 +49,7 @@ public class HashMapPriorityQueue {
      * @param state puzzle board state to remove from the queue
      * @return the removed Node object
      */
-    public Node remove(ArrayList<Byte> state) {
+    private Node remove(ArrayList<Byte> state) {
         Node node = stateNodeMap.get(state);
         this.priorityQueue.remove(node);
         this.stateNodeMap.remove(state);

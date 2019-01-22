@@ -7,18 +7,18 @@ import java.util.Collections;
  */
 public class Node {
 
-    private ArrayList<Byte> state;
+    private final ArrayList<Byte> state;
     private Node parent;
-    private ArrayList<Node> children;
+    private final ArrayList<Node> children;
     private Action action;
-    private int depth;
+    private final int depth;
     private boolean expanded;
 
     // Cost of the previous move that resulted in this Node
-    private int cost;
+    private final int cost;
 
     // Total cost from root Node to this Node
-    private int pathCost;
+    private final int pathCost;
 
     /**
      * Constructor for root node in search tree
@@ -61,7 +61,7 @@ public class Node {
         this.children.add(child);
     }
 
-    public int getZeroLocation() { return this.state.indexOf((byte) 0); }
+    private int getZeroLocation() { return this.state.indexOf((byte) 0); }
 
     public ArrayList<Byte> getState() {
         return state;
