@@ -97,6 +97,8 @@ public class Search {
                 for(Action action : node.getActions()) {
                     ArrayList<Byte> childState = BoardUtilities.performAction(nodeState, action);
 
+                    // NOTE: in some cases, the searchQueue.contains check forces the algorithm
+                    // to select a worse solution - see stats
                     if (!explored.contains(childState) && !searchQueue.contains(childState)) {
                         Node child = new Node(childState, node, action);
                         node.addChild(child);
